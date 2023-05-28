@@ -1,4 +1,5 @@
 from enum import Enum
+import sys
 from typing import Dict, List, Optional
 
 class Color(Enum):
@@ -54,10 +55,10 @@ class Graph:
 		return False
 
 	def printStack(self):
-		print('Stack: [', end=' ')
+		print("[", end=' ')
 		for node in self.stack:
 			print(node.name, end=' ')
-		print(']')
+		print("]")
 
 	def printListAdjacents(self):
 		for node in self.nodes:
@@ -110,39 +111,45 @@ def dfs_visit(graph: Graph, node: Node):
 	node.blackAt = graph.mark
 	graph.stack.append(node)
 
+def load_graph_from_file(file_path: str) -> Graph:
+	with open(file_path, 'r') as file:
+		lines = file.readlines()
+
+	nodes: List[Node] = []
+	for line in lines:
+		line = line.strip()
+		node_source_name, node_destiny_name = line.split(' ')
+
+
+		node_source: Optional[Node] = None
+		node_destiny: Optional[Node] = None
+		# Checa se os nós já existem
+		for node in nodes:
+			if node.name == node_source_name:
+				node_source = node
+			if node.name == node_destiny_name:
+				node_destiny = node
+
+		if node_destiny is None:
+			node_destiny = Node(node_destiny_name)
+			nodes.append(node_destiny)
+		if node_source is None:
+			node_source = Node(node_source_name)
+			nodes.append(node_source)
+
+		node_source.addAdjacent(node_destiny)
+
+	graph: Graph = Graph(nodes)
+	return graph
+
 if __name__ == '__main__':
-	nodeA = Node("A", 2)
-	nodeC = Node("C", 1)
-	nodeB = Node("B", 3)
-	nodeD = Node("D", 4)
-	nodeE = Node("E", 5)
-	nodeF = Node("F", 6)
-	nodeG = Node("G", 7)
-	nodeH = Node("H", 8)
-
-	nodeA.addAdjacent(nodeB)
-
-	nodeB.addAdjacent(nodeC)
-	nodeB.addAdjacent(nodeE)
-	nodeB.addAdjacent(nodeF)
-
-	nodeC.addAdjacent(nodeD)
-	nodeC.addAdjacent(nodeG)
-
-	nodeD.addAdjacent(nodeC)
-	nodeD.addAdjacent(nodeH)
-
-	nodeE.addAdjacent(nodeA)
-	nodeE.addAdjacent(nodeF)
-
-	nodeF.addAdjacent(nodeG)
-
-	nodeG.addAdjacent(nodeF)
-	nodeG.addAdjacent(nodeH)
-
-	nodeH.addAdjacent(nodeH)
-
-	graph: Graph = Graph([nodeA, nodeB, nodeC, nodeD, nodeE, nodeF, nodeG, nodeH])
+	graph_file_name: Optional[str] = None
+	try:
+		graph_file_name = sys.argv[1]
+	except IndexError:
+		print('Error: Arquivo de entrada não informado. Passe o caminho do arquivo como argumento.')
+		sys.exit(1)
+	graph = load_graph_from_file(graph_file_name)
 
 	dfs(graph)
 
