@@ -75,6 +75,14 @@ class Graph:
 	def orderNodes(self):
 		if not self.hasNodeWithValue():
 			self.nodes = sorted(self.nodes, key=lambda node: node.name)
+			heigherExits = 0
+			heigherExitsNode: Node = None
+			for _, element in enumerate(self.nodes):
+				if(len(element.adjacents) > heigherExits):
+					heigherExits = len(element.adjacents)
+					heigherExitsNode = element
+			self.nodes.remove(heigherExitsNode)
+			self.nodes.insert(0, heigherExitsNode)
 			return
 		
 		for node in self.nodes:
