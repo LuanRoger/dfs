@@ -81,8 +81,9 @@ class Graph:
 				if(len(element.adjacents) > heigherExits):
 					heigherExits = len(element.adjacents)
 					heigherExitsNode = element
-			self.nodes.remove(heigherExitsNode)
-			self.nodes.insert(0, heigherExitsNode)
+			if heigherExitsNode is not None:
+				self.nodes.remove(heigherExitsNode)
+				self.nodes.insert(0, heigherExitsNode)
 			return
 		
 		for node in self.nodes:
